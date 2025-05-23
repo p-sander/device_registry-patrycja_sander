@@ -1,24 +1,63 @@
-# README
+#Device Registry
 
-Your task is to implement the part of the application that helps track devices assigned to users within an organization.
+A simple device assignment and return tracking system. This Ruby on Rails application enables users within an organization to assign and return devices, with strict business rules around ownership and history of use.
 
-For now, we have two ActiveRecord models: User and Device.
-User can have many devices; the device should be active only for one assigned user.
-There are 2 actions a User can take with the Device: assign the device to User or return the Device.
+---
 
-Here are the product requirements:
-- User can assign the device only to themself. 
-- User can't assign the device already assigned to another user.
-- Only the user who assigned the device can return it. 
-- If the user returned the device in the past, they can't ever re-assign the same device to themself.
+## Features
+
+- Assign a device to a user (user can only assign devices to themselves).
+- Prevent re-assignment of returned devices to the same user.
+- Prevent device assignment if it is actively assigned to another user.
+- Allow only the user who assigned a device to return it.
+- Prevent returning devices more than once.
+
+---
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+git clone https://github.com/p_sander/device-registry.git
+cd device-registry
 
 
-TODO:
- - Clone this repo to your local machine - DON'T FORK IT.
- - Fix the config, so you can run the test suite properly.
- - Implement the code to make the tests pass for `AssignDeviceToUser` service.
- - Following the product requirements listed above, implement tests for returning the device and then implement the code to make them pass.
- - In case you are missing additional product requirements, use your best judgment. Have fun with it.
- - Refactor at will. Do you see something you don't like? Change it. It's your code. Remember to satisfy the outlined product requirements though.
- - Remember to document your progress using granular commits and meaningful commit messages.
- - Publish your code as a public repo using your Github account.
+### 2. Set the Correct Ruby Version
+
+Ensure you are using Ruby version 3.2.3. You can install and set it with rbenv:
+
+rbenv install 3.2.3
+rbenv local 3.2.3
+
+
+### 3. Install Dependencies
+
+bundle install
+
+
+### 4. Prepare the Database
+
+bundle exec rake db:setup
+bundle exec rake db:test:prepare
+
+
+## Running the Test Suite
+
+bundle exec rspec
+This will run all the tests including:
+
+## Project srtucture
+
+Service specs for AssignDeviceToUser and ReturnDeviceFromUser
+Controller specs for device assignment and unassignment
+Structure Overview
+
+app/services/assign_device_to_user.rb: Business logic for assigning devices.
+app/services/return_device_from_user.rb: Business logic for returning devices.
+spec/services/: Tests for services.
+spec/controllers/: Tests for API endpoints.
+
+
+
+Author
+Patrycja Sander
