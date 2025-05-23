@@ -48,8 +48,12 @@ class AssignDeviceToUser
   end
 
   def check_if_assignment_exists_for_user_and_device!(user, device)
-    if DeviceAssignment.exists?(user: user, device: device)
-      raise AssigningError::AlreadyUsedOnUser "You already assigned to this device once, you can't do it again"
+    if DeviceAssignment.where(user: user, device: device, returned: true).exists?
+      raise AssigningError::AlreadyUsedOnUser, "You already assigned to this device once, you can't do it again"
+    end
+
+    if DeviceAssignment.where(device: device, returned: false).where.not(user_id: user.id).exists?
+      raise AssigningError::AlreadyUsedOnOtherUser, "This device is already actively assigned to another user."
     end
   end
 
@@ -58,7 +62,7 @@ class AssignDeviceToUser
     if assignment.save
       assignment
     else
-      if assignment.errors[device_id].any? { |msg| msg.include?("already assigned") }
+      if assignment.errors[:device_id].any? { |msg| msg.include?("already assigned") }
         raise AssigningError::AlreadyUsedOnOtherUser, "This device is already actively assigned to another user."
       else
         raise ActiveRecord::RecordInvalid, assignment.errors.full_messages.join(',')
