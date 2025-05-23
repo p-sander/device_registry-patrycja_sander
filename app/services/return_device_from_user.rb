@@ -11,6 +11,8 @@ class ReturnDeviceFromUser
     validate_inputs!
     device = find_device(serial_number)
     device_assignment = find_device_assignment(user, device)
+    authorise_return!(device_assignment)
+    mark_as_returned!(device_assignment)
   end
 
   private
@@ -42,6 +44,13 @@ class ReturnDeviceFromUser
     end
   end
 
+  def mark_as_returned!(device_assignment)
+    check_if_device_was_not_returned_before(device_assignment)
 
+    device_assignment.update(returned: true)
+    device_assignment
+  rescue  ActiveRecord::RecordInvalid => e
+    raise RegistrationError::ValidationError.new(e.message)
+  end
 end
 
