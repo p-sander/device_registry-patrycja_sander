@@ -11,10 +11,15 @@ class AssignDeviceToUser
 
   def call
     validate_inputs!
+
     future_device_owner = find_new_device_owner
     compare_requesting_user_and_new_device_owner(future_device_owner)
+
     device = find_device_by_serial_number
+
     check_if_user_assigned_device_before!(future_device_owner, device)
+
+    assign_device_to_user(future_device_owner, device)
   end
 
   private
@@ -44,6 +49,15 @@ class AssignDeviceToUser
   def check_if_user_assigned_device_before!(user, device)
     if DeviceAssignment.find_by(user: user, device: device, returned: true)
       raise ActiveRecord::RecordNotUnique, "You already assigned to this device once, you can't do it again"
+    end
+  end
+
+  def assign_device_to_user(user, device)
+    assignment = DeviceAssignment.new(user: user, device: device, returned: false)
+    if assignment.save
+      assignment
+    else
+      raise "Assignment failed"
     end
   end
 end
