@@ -13,7 +13,7 @@ class AssignDeviceToUser
     validate_inputs!
 
     future_device_owner = find_new_device_owner
-    compare_requesting_user_and_new_device_owner(future_device_owner)
+    compare_requesting_user_and_new_device_owner!(future_device_owner)
 
     device = find_device_by_serial_number
 
@@ -37,7 +37,7 @@ class AssignDeviceToUser
 
   def compare_requesting_user_and_new_device_owner!(new_device_owner)
     unless requesting_user == new_device_owner
-      raise ArgumentError, "You can't assign a device to someone else, just to yourself"
+      raise RegistrationError::Unauthorized , "You can't assign a device to someone else, just to yourself"
     end
   end
 
