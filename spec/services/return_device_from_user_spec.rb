@@ -28,4 +28,21 @@ RSpec.describe ReturnDeviceFromUser do
     end
   end
 
+  context 'when user tries to return a device assigned not to them' do
+    let(:other_user) { create(:user) }
+
+    before do
+      AssignDeviceToUser.new(
+        requesting_user: other_user,
+        serial_number: device.serial_number,
+        new_device_owner_id: other_user.id
+      ).call
+    end
+
+    it 'raises an error' do
+      expect { return_device }.to raise_error(RegistrationError::Unauthorized)
+    end
+
+  end
+
 end
