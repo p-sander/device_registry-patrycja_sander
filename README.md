@@ -18,7 +18,9 @@ A simple device assignment and return tracking system. This Ruby on Rails applic
 
 ### 1. Clone the Repository
 
+
 git clone https://github.com/p_sander/device-registry.git
+
 cd device-registry
 
 
