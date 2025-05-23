@@ -15,8 +15,4 @@ class DeviceAssignment < ApplicationRecord
 
   scope :returned, -> { where(returned: true) }
   scope :active, -> { where(returned: false) }
-
-  def not_returned?
-    !returned
-  end
 end
