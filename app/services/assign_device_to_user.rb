@@ -15,9 +15,9 @@ class AssignDeviceToUser
     future_device_owner = find_new_device_owner
     compare_requesting_user_and_new_device_owner!(future_device_owner)
 
-    device = find_device_by_serial_number
+    device = find_or_create_device_by_serial_number(serial_number)
 
-    check_if_user_assigned_device_before!(future_device_owner, device)
+    check_if_assignment_exists_for_user_and_device!(future_device_owner, device)
 
     assign_device_to_user(future_device_owner, device)
   end
@@ -26,7 +26,7 @@ class AssignDeviceToUser
 
   def validate_inputs!
     raise ArgumentError, "No user" if requesting_user.nil?
-    raise ArgumentError, "No serial number" if serial_number.nil?
+    raise ArgumentError, "No serial number" if serial_number.blank?
     raise ArgumentError, "No id of the owner" if new_device_owner_id.zero?
   end
 
@@ -37,18 +37,19 @@ class AssignDeviceToUser
 
   def compare_requesting_user_and_new_device_owner!(new_device_owner)
     unless requesting_user == new_device_owner
-      raise RegistrationError::Unauthorized , "You can't assign a device to someone else, just to yourself"
+      raise RegistrationError::Unauthorized, "You can't assign a device to someone else, just to yourself"
     end
   end
 
-  def find_device_by_serial_number
-    Device.find_by(serial_number: serial_number) ||
-      raise(ActiveRecord::RecordNotFound, "No device with serial number #{serial_number}")
+  def find_or_create_device_by_serial_number(serial_number)
+    Device.find_or_create_by!(serial_number: serial_number)
+  rescue ActiveRecord::RecordInvalid => e
+    raise ActiveRecord::RecordInvalid, "Failed to create device: #{e.message}"
   end
 
-  def check_if_user_assigned_device_before!(user, device)
-    if DeviceAssignment.find_by(user: user, device: device, returned: true)
-      raise ActiveRecord::RecordNotUnique, "You already assigned to this device once, you can't do it again"
+  def check_if_assignment_exists_for_user_and_device!(user, device)
+    if DeviceAssignment.exists?(user: user, device: device)
+      raise AssigningError::AlreadyUsedOnUser "You already assigned to this device once, you can't do it again"
     end
   end
 
@@ -57,7 +58,11 @@ class AssignDeviceToUser
     if assignment.save
       assignment
     else
-      raise "Assignment failed"
+      if assignment.errors[device_id].any? { |msg| msg.include?("already assigned") }
+        raise AssigningError::AlreadyUsedOnOtherUser, "This device is already actively assigned to another user."
+      else
+        raise ActiveRecord::RecordInvalid, assignment.errors.full_messages.join(',')
+      end
     end
   end
 end
