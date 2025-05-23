@@ -27,7 +27,13 @@ class ReturnDeviceFromUser
 
   def find_device_assignment(user, device)
     DeviceAssignment.find_by(user, device) ||
-      raise(RegistrationError::Unauthorized, "You cannot return a device you did not assign.")
+      raise(RegistrationError::Unauthorized, "This device is not assigned to this user")
+  end
+
+  def authorise_return!(device_assignment)
+    unless device_assignment.user == user
+      raise(ReturningError::ReturnWhatIsNotAssignedToUser, "Only the assigned user can return this device.")
+    end
   end
 end
 
