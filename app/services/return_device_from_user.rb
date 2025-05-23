@@ -28,8 +28,8 @@ class ReturnDeviceFromUser
   end
 
   def find_device_assignment(user, device)
-    DeviceAssignment.find_by(user, device) ||
-      raise(RegistrationError::Unauthorized, "This device is not assigned to this user")
+    DeviceAssignment.find_by(user: user, device: device) ||
+      raise(ActiveRecord::RecordNotFound, "This device is not assigned to this user")
   end
 
   def authorise_return!(device_assignment)
@@ -39,7 +39,8 @@ class ReturnDeviceFromUser
   end
 
   def check_if_device_was_not_returned_before(device_assignment)
-    if device_assignment.returned?
+    if device_assignment.returned == true
+      # raise AssigningError::AlreadyUsedOnUser, "This device has already been returned."
       raise ReturningError::AlreadyReturnedDevice, "This device has already been returned."
     end
   end
@@ -47,7 +48,7 @@ class ReturnDeviceFromUser
   def mark_as_returned!(device_assignment)
     check_if_device_was_not_returned_before(device_assignment)
 
-    device_assignment.update(returned: true)
+    device_assignment.update!(returned: true)
     device_assignment
   rescue  ActiveRecord::RecordInvalid => e
     raise RegistrationError::ValidationError.new(e.message)
