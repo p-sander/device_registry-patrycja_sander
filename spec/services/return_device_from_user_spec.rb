@@ -57,5 +57,20 @@ RSpec.describe ReturnDeviceFromUser do
     it 'raises an error' do
       expect { return_device }.to raise_error(AssigningError::AlreadyReturnedDevice)
     end
+  end
+
+  context 'when user tries to return a device that does not exist' do
+    let(:serial_number) { 'nonexistent_serial' }
+    it 'raises an error' do
+      expect { return_device }.to raise_error(ActiveRecord::RecordNotFound)
     end
+  end
+
+  context 'when there is a failure in the transaction' do
+    it 'rolls back the changes if an error occcurs' do
+      allow_any_instance_of(DeviceAssignment).to receive(:update!).and_raise(ActiveRecord::RecordInvalid)
+
+      expect { return_device }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
 end
