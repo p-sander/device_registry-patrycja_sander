@@ -13,6 +13,7 @@ class AssignDeviceToUser
     validate_inputs!
     future_device_owner = find_new_device_owner
     compare_requesting_user_and_new_device_owner(future_device_owner)
+    device = find_device_by_serial_number
   end
 
   private
@@ -32,5 +33,10 @@ class AssignDeviceToUser
     unless requesting_user == new_device_owner
       raise ArgumentError, "You can't assign a device to someone else, just to yourself"
     end
+  end
+
+  def find_device_by_serial_number
+    Device.find_by(serial_number: serial_number) ||
+      raise(ActiveRecord::RecordNotFound, "No device with serial number #{serial_number}")
   end
 end
