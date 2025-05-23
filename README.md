@@ -26,6 +26,7 @@ cd device-registry
 
 Ensure you are using Ruby version 3.2.3. You can install and set it with rbenv:
 
+
 rbenv install 3.2.3
 rbenv local 3.2.3
 
@@ -44,9 +45,9 @@ bundle exec rake db:test:prepare
 ## Running the Test Suite
 
 bundle exec rspec
-This will run all the tests including:
 
-## Project srtucture
+
+## Project structure
 
 Service specs for AssignDeviceToUser and ReturnDeviceFromUser
 Controller specs for device assignment and unassignment
