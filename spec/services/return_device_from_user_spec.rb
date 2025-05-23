@@ -55,7 +55,7 @@ RSpec.describe ReturnDeviceFromUser do
       ReturnDeviceFromUser.new(user: user, serial_number: device.serial_number).call
     end
     it 'raises an error' do
-      expect { return_device }.to raise_error(AssigningError::AlreadyReturnedDevice)
+      expect { return_device }.to raise_error(ReturningError::AlreadyReturnedDevice)
     end
   end
 
