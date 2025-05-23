@@ -14,6 +14,7 @@ class AssignDeviceToUser
     future_device_owner = find_new_device_owner
     compare_requesting_user_and_new_device_owner(future_device_owner)
     device = find_device_by_serial_number
+    check_if_user_assigned_device_before!(future_device_owner, device)
   end
 
   private
@@ -29,7 +30,7 @@ class AssignDeviceToUser
       raise(ActiveRecord::RecordNotFound, "No user with id #{new_device_owner_id}")
   end
 
-  def compare_requesting_user_and_new_device_owner(new_device_owner)
+  def compare_requesting_user_and_new_device_owner!(new_device_owner)
     unless requesting_user == new_device_owner
       raise ArgumentError, "You can't assign a device to someone else, just to yourself"
     end
@@ -38,5 +39,11 @@ class AssignDeviceToUser
   def find_device_by_serial_number
     Device.find_by(serial_number: serial_number) ||
       raise(ActiveRecord::RecordNotFound, "No device with serial number #{serial_number}")
+  end
+
+  def check_if_user_assigned_device_before!(user, device)
+    if DeviceAssignment.find_by(user: user, device: device, returned: true)
+      raise ActiveRecord::RecordNotUnique, "You already assigned to this device once, you can't do it again"
+    end
   end
 end
