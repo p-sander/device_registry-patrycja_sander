@@ -40,6 +40,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'rspec-rails'
   gem 'pry-rails'
+  gem 'faker', '~> 3.2', '>= 3.2.3'
 end
 
 group :test do
