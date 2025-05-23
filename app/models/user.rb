@@ -16,6 +16,5 @@ class User < ApplicationRecord
 
   has_many :api_keys, as: :bearer
 
-  validates :username, presence: true, uniqueness: true
-  validate :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 end
