@@ -23,7 +23,7 @@ class ReturnDeviceFromUser
   end
 
   def find_device(serial_number)
-    Device.find_by(serial_number) ||
+    Device.find_by(serial_number: serial_number) ||
       raise(ActiveRecord::RecordNotFound)
   end
 
