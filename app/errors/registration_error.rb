@@ -2,4 +2,5 @@
 
 module RegistrationError
   class Unauthorized < StandardError; end
+  class ValidationError < StandardError; end
 end
