@@ -8,4 +8,7 @@ module AssigningError
 
   # error when user tries to assign a device, that belongs to someone else
   class AlreadyUsedOnOtherUser < Base; end
+
+  #error when user tries to return a device that had been returned
+  class AlreadyReturnedDevice < Base; end
 end

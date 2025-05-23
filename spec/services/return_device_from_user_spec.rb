@@ -42,7 +42,20 @@ RSpec.describe ReturnDeviceFromUser do
     it 'raises an error' do
       expect { return_device }.to raise_error(RegistrationError::Unauthorized)
     end
-
   end
 
+  context 'when user tries to return a device that had been returned' do
+    before do
+      AssignDeviceToUser.new(
+        requesting_user: user,
+        serial_number: device.serial_number,
+        new_device_owner_id: user.id
+      ).call
+
+      ReturnDeviceFromUser.new(user: user, serial_number: device.serial_number).call
+    end
+    it 'raises an error' do
+      expect { return_device }.to raise_error(AssigningError::AlreadyReturnedDevice)
+    end
+    end
 end
