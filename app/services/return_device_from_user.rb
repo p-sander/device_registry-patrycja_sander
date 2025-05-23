@@ -35,5 +35,13 @@ class ReturnDeviceFromUser
       raise(ReturningError::ReturnWhatIsNotAssignedToUser, "Only the assigned user can return this device.")
     end
   end
+
+  def check_if_device_was_not_returned_before(device_assignment)
+    if device_assignment.returned?
+      raise ReturningError::AlreadyReturnedDevice, "This device has already been returned."
+    end
+  end
+
+
 end
 
