@@ -5,7 +5,6 @@ RSpec.describe Api::DevicesController, type: :controller do
   let(:api_key) { create(:api_key, bearer: user) }
 
   before do
-    # Simulujemy nagłówek Authorization z tokenem
     request.headers['Authorization'] = "Token #{api_key.token}"
   end
 
