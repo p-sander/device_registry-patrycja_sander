@@ -32,6 +32,10 @@ Ensure you are using Ruby version 3.2.3. You can install and set it with rbenv:
 rbenv install 3.2.3
 rbenv local 3.2.3
 
+To check your current version use the command:
+
+ruby --version
+
 
 ### 3. Install Dependencies
 
@@ -51,13 +55,19 @@ bundle exec rspec
 
 ## Project structure
 
-Service specs for AssignDeviceToUser and ReturnDeviceFromUser
-Controller specs for device assignment and unassignment
-Structure Overview
+### Service 
+  specs for AssignDeviceToUser and ReturnDeviceFromUser
+### Controller
+  specs for device assignment and unassignment
+
+### Structure Overview
 
 app/services/assign_device_to_user.rb: Business logic for assigning devices.
+
 app/services/return_device_from_user.rb: Business logic for returning devices.
+
 spec/services/: Tests for services.
+
 spec/controllers/: Tests for API endpoints.
 
 
