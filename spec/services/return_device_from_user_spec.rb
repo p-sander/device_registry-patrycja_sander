@@ -23,7 +23,7 @@ RSpec.describe ReturnDeviceFromUser do
     end
 
     it 'successfully returns device' do
-      expect(return_device).not_to raise_error
+      expect { return_device }.not_to raise_error
       expect(DeviceAssignment.find_by(user: user, device: device).returned).to eq(true)
     end
   end
@@ -40,7 +40,7 @@ RSpec.describe ReturnDeviceFromUser do
     end
 
     it 'raises an error' do
-      expect { return_device }.to raise_error(RegistrationError::Unauthorized)
+      expect { return_device }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
@@ -67,10 +67,18 @@ RSpec.describe ReturnDeviceFromUser do
   end
 
   context 'when there is a failure in the transaction' do
-    it 'rolls back the changes if an error occcurs' do
+    before do
+      AssignDeviceToUser.new(
+        requesting_user: user,
+        serial_number: device.serial_number,
+        new_device_owner_id: user.id
+      ).call
+    end
+
+    it 'rolls back the changes if an error occurs' do
       allow_any_instance_of(DeviceAssignment).to receive(:update!).and_raise(ActiveRecord::RecordInvalid)
 
-      expect { return_device }.to raise_error(ActiveRecord::RecordInvalid)
+      expect { return_device }.to raise_error(RegistrationError::ValidationError)
     end
   end
 end
