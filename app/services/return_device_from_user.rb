@@ -7,7 +7,13 @@ class ReturnDeviceFromUser
   end
 
   def call
-    # TODO
+    device = find_device(@serial_number)
+  end
+
+  private
+  def find_device(serial_number)
+    Device.find_by(serial_number) ||
+      raise(ActiveRecord::RecordNotFound)
   end
 end
 
